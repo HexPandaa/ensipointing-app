@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'utils.dart';
 
 void main() {
-  // HttpOverrides.global = ...;
+  // HttpOverrides.global = ProxyHttpOverrides();
   runApp(const MyApp());
 }
 

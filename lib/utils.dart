@@ -6,26 +6,36 @@ import 'package:http/http.dart' as http;
 class ProxyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
-    // var c = super.createHttpClient(context);
-    HttpClient client = HttpClient(context: context);
-    client.findProxy = (url) {
-      return HttpClient.findProxyFromEnvironment(url, environment: {
-        "http_proxy": "127.0.0.1:3128",
-        "https_proxy": "127.0.0.1:3128"
-      });
+    // Hardcoded for now
+    String proxyHost = "sub.domain.tld";
+    String proxyPort = "3128";
+    String proxyUsername = "user";
+    String proxyPassword = "password";
+
+    HttpClient client = super.createHttpClient(context);
+    client.findProxy = (Uri uri) {
+      return 'PROXY $proxyHost:$proxyPort';
+    };
+    client.authenticateProxy = (host, port, scheme, realm) {
+      client.addProxyCredentials(host, port, realm!,
+          HttpClientBasicCredentials(proxyUsername, proxyPassword));
+      return Future.value(true);
     };
     return client;
   }
-
-// Possible alternative
+  
+// Alternative
 // @override
 // HttpClient createHttpClient(SecurityContext? context) {
-//   HttpClient client = HttpClient();
-//   client.findProxy = (Uri uni) {
-//     return 'PROXY 127.0.0.1';
-//   };
-//   client.authenticate = (uri, scheme, realm) { // authenticateProxy ?
-//     client.addCredentials(uri, realm!, HttpClientBasicCredentials('username', 'password'));
+//   print("Called custom http");
+//   HttpClient client = super.createHttpClient(context);
+//   // HttpClient client = HttpClient(context: context);
+//   client.findProxy = (url) {
+//     print("Called findProxy");
+//     return HttpClient.findProxyFromEnvironment(url, environment: {
+//       "http_proxy": "127.0.0.1:3128",
+//       "https_proxy": "127.0.0.1:3128"
+//     });
 //   };
 //   return client;
 // }
@@ -33,16 +43,11 @@ class ProxyHttpOverrides extends HttpOverrides {
 
 class Courses {
   static void getCourses() async {
-    var url = Uri.parse('https://google.com/');
-    var response = await http.get(url);
-    print('Response status: ${response.statusCode}');
-    print('Response body: ${response.body}');
-
-    // HttpOverrides.runWithHttpOverrides(() async {
-    //   var url = Uri.parse('https://domain.tld');
-    //   var response = await http.get(url);
-    //   print('Response status: ${response.statusCode}');
-    //   print('Response body: ${response.body}');
-    // }, ProxyHttpOverrides());
+    HttpOverrides.runWithHttpOverrides(() async {
+      var url = Uri.parse('https://extranet.ensimag.fr/assiduite');
+      var response = await http.get(url);
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+    }, ProxyHttpOverrides());
   }
 }

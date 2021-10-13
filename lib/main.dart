@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'utils.dart';
 import 'courses.dart';
+import 'pages.dart';
 
 void main() {
-  // HttpOverrides.global = ProxyHttpOverrides();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -19,46 +18,69 @@ class MyApp extends StatelessWidget {
         // This is the theme of your application.
         primarySwatch: Colors.lightBlue,
       ),
-      home: Scaffold(
-          body: HomePage(),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Courses.getCourses();
-            },
-            child: const Icon(Icons.push_pin_outlined),
-            tooltip: 'Point',
-          ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerDocked,
-          bottomNavigationBar: const BottomNavBar()),
+      home: const App(),
     );
   }
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({Key? key}) : super(key: key);
+/// Main application widget
+class App extends StatefulWidget {
+  const App({Key? key}) : super(key: key);
+
+  @override
+  _AppState createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  late PageController pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    pageController = PageController(initialPage: 0);
+  }
+
+  void _changePage(int pageId) {
+    setState(() {
+      pageController.jumpToPage(pageId);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    return CoursesList(
-      courses: <Course>[
-        Course(
-            name: 'Test 1',
-            room: 'Room 11',
-            time: DateTime.now(),
-            state: CourseState.notYetPointed),
-        Course(
-            name: 'Test 2',
-            room: 'Room 22',
-            time: DateTime.now(),
-            state: CourseState.missed),
-      ],
-    );
+    return Scaffold(
+        body: PageView(
+          physics: const NeverScrollableScrollPhysics(),
+          controller: pageController,
+          children: <Widget>[
+            HomePage(
+              changePageCallback: _changePage,
+              pageId: 0,
+            ),
+            SettingsPage(
+              changePageCallback: _changePage,
+              pageId: 1,
+            )
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            var c = CoursesHTTPClient();
+            c.updateCourses();
+          },
+          child: const Icon(Icons.push_pin_outlined),
+          tooltip: 'Point',
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        bottomNavigationBar: BottomNavBar(changePageCallback: _changePage));
   }
 }
 
 class BottomNavBar extends StatelessWidget {
-  const BottomNavBar({Key? key}) : super(key: key);
+  const BottomNavBar({required this.changePageCallback, Key? key})
+      : super(key: key);
+
+  final Function(int pageId) changePageCallback;
 
   @override
   Widget build(BuildContext context) {
@@ -67,16 +89,20 @@ class BottomNavBar extends StatelessWidget {
         color: Colors.lightBlueAccent,
         child: Row(
           children: <Widget>[
-            IconButton(
-              tooltip: 'Open navigation menu',
-              icon: const Icon(Icons.menu),
-              onPressed: () {},
-            ),
             const Spacer(),
+            IconButton(
+              tooltip: 'Home',
+              icon: const Icon(Icons.home),
+              onPressed: () {
+                changePageCallback(0);
+              },
+            ),
             IconButton(
               tooltip: 'Settings',
               icon: const Icon(Icons.settings),
-              onPressed: () {},
+              onPressed: () {
+                changePageCallback(1);
+              },
             )
           ],
         ));

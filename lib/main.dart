@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'utils.dart';
 import 'courses.dart';
 import 'pages.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart'
+    show Settings;
 
-void main() {
+void main() async {
+  await Settings.init();
   runApp(const MyApp());
 }
 

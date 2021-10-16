@@ -6,15 +6,13 @@ import 'package:http/http.dart' as http;
 class ProxyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
-    // Hardcoded for now
-    String proxyHost = "sub.domain.tld";
-    String proxyPort = "3128";
-    String proxyUsername = "user";
-    String proxyPassword = "password";
+    String proxyHostPort = Settings.getValue(AppSettingKeys.proxyHost, "");
+    String proxyUsername = Settings.getValue(AppSettingKeys.proxyUsername, "");
+    String proxyPassword = Settings.getValue(AppSettingKeys.proxyPassword, "");
 
     HttpClient client = super.createHttpClient(context);
     client.findProxy = (Uri uri) {
-      return 'PROXY $proxyHost:$proxyPort';
+      return 'PROXY $proxyHostPort';
     };
     client.authenticateProxy = (host, port, scheme, realm) {
       client.addProxyCredentials(host, port, realm!,

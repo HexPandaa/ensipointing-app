@@ -62,20 +62,21 @@ class _CoursesListState extends State<CoursesList> {
 typedef CoursesChangedCallback = Function(Course course);
 
 class CoursesListItem extends StatelessWidget {
-  const CoursesListItem({
-    required this.course,
-    required this.onCoursesChanged,
-    Key? key
-  }) : super(key: key);
+  const CoursesListItem(
+      {required this.course, required this.onCoursesChanged, Key? key})
+      : super(key: key);
 
   final Course course;
   final CoursesChangedCallback onCoursesChanged;
 
   Color _getColor(BuildContext context) {
     switch (course.state) {
-      case CourseState.pointed: return Colors.green;
-      case CourseState.notYetPointed: return Colors.yellow;
-      case CourseState.missed: return Colors.red;
+      case CourseState.pointed:
+        return Colors.green;
+      case CourseState.notYetPointed:
+        return Colors.yellow;
+      case CourseState.missed:
+        return Colors.red;
     }
   }
 
@@ -83,14 +84,13 @@ class CoursesListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
         child: ListTile(
-          onTap: () {
-            onCoursesChanged(course);
-          },
-          leading: const Icon(Icons.check),
-          title: Text(course.name),
-          subtitle: Text(course.room),
-          tileColor: _getColor(context),
-        )
-    );
+      onTap: () {
+        onCoursesChanged(course);
+      },
+      leading: const Icon(Icons.check),
+      title: Text(course.name),
+      subtitle: Text(course.room),
+      tileColor: _getColor(context),
+    ));
   }
 }

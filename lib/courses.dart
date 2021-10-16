@@ -3,30 +3,28 @@ import 'package:flutter/material.dart';
 // Inspired by the Shopping List example :
 // https://flutter.dev/docs/development/ui/widgets-intro
 
-
-enum CourseState {
-  pointed,
-  notYetPointed,
-  missed
-}
+enum CourseState { pointed, notYetPointed, missed }
 
 class Course {
   Course({
     required this.name,
     required this.room,
-    required this.time,
-    required this.state,
+    required this.timeStart,
+    required this.timeEnd,
+    required this.id,
   });
 
   final String name;
   final String room;
-  final DateTime time;
+  final DateTime timeStart;
+  final DateTime timeEnd;
+  final int id;
   CourseState state = CourseState.notYetPointed;
 
-  void setState(CourseState state) {
+  Course setState(CourseState state) {
     this.state = state;
+    return this;
   }
-
 }
 
 class CoursesList extends StatefulWidget {

@@ -1,3 +1,4 @@
+import 'package:ensipointing/utils.dart';
 import 'package:flutter/material.dart';
 
 // Inspired by the Shopping List example :
@@ -28,17 +29,14 @@ class Course {
 }
 
 class CoursesList extends StatefulWidget {
-  const CoursesList({required this.courses, Key? key}) : super(key: key);
-
-  final List<Course> courses;
+  const CoursesList({Key? key}) : super(key: key);
 
   @override
   _CoursesListState createState() => _CoursesListState();
 }
 
 class _CoursesListState extends State<CoursesList> {
-
-  final _courses = <Course>{};
+  late List<Course> _courses;
 
   void _handleCoursesChanged(Course course) {
     setState(() {
@@ -47,15 +45,37 @@ class _CoursesListState extends State<CoursesList> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    _courses = [];
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return ListView(
-      children: widget.courses.map((Course course) {
-        return CoursesListItem(
-          course: course,
-          onCoursesChanged: _handleCoursesChanged,
-        );
-      }).toList(),
-    );
+    return RefreshIndicator(
+        child: ListView(
+          children: _courses.map((Course course) {
+            return CoursesListItem(
+              course: course,
+              onCoursesChanged: _handleCoursesChanged,
+            );
+          }).toList(),
+          physics: const AlwaysScrollableScrollPhysics(),
+        ),
+        onRefresh: () async {
+          try {
+            List<Course> c = await CoursesHTTPClient.getPointableCourses();
+            return setState(() {
+              _courses = c;
+            });
+          } catch (err) {
+            final snackBar = SnackBar(
+              content: Text(err.toString()),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+          return Future.value(true);
+        });
   }
 }
 

@@ -92,16 +92,15 @@ class SettingsPage extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
-  const HomePage(
-      {required this.changePageCallback, required this.pageId, Key? key})
-      : super(key: key);
+  const HomePage({required this.pageController, Key? key}) : super(key: key);
 
-  final Function(int pageId) changePageCallback;
-  final pageId;
+  final PageController pageController;
 
   @override
   Widget build(BuildContext context) {
-    return const CoursesList();
+    return CoursesList(
+      pageController: pageController,
+    );
   }
 }
 
@@ -113,4 +112,3 @@ class HistoryPage extends StatelessWidget {
     return const PointedCoursesList();
   }
 }
-

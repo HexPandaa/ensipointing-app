@@ -57,10 +57,9 @@ class _AppState extends State<App> {
           controller: pageController,
           children: <Widget>[
             HomePage(
-              changePageCallback: _changePage,
-              pageId: 0,
+              pageController: pageController,
             ),
-            HistoryPage(),
+            const HistoryPage(),
             SettingsPage(
               changePageCallback: _changePage,
               pageId: 2,

@@ -29,7 +29,9 @@ class Course {
 }
 
 class CoursesList extends StatefulWidget {
-  const CoursesList({Key? key}) : super(key: key);
+  const CoursesList({required this.pageController, Key? key}) : super(key: key);
+
+  final PageController pageController;
 
   @override
   _CoursesListState createState() => _CoursesListState();
@@ -63,14 +65,30 @@ class _CoursesListState extends State<CoursesList> {
           physics: const AlwaysScrollableScrollPhysics(),
         ),
         onRefresh: () async {
-          try {
-            List<Course> c = await CoursesHTTPClient.getPointableCourses();
-            return setState(() {
-              _courses = c;
-            });
-          } catch (err) {
+          String? err = CoursesHTTPClient.allSettingsSet();
+          if (err == null) {
+            // Everything should be set in the settings
+            try {
+              List<Course> c = await CoursesHTTPClient.getPointableCourses();
+              return setState(() {
+                _courses = c;
+              });
+            } catch (err) {
+              final snackBar = SnackBar(
+                content: Text(err.toString()),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
+          } else {
+            // Something is missing from the settings
             final snackBar = SnackBar(
-              content: Text(err.toString()),
+              content: Text(err + ' is missing from the settings'),
+              action: SnackBarAction(
+                label: 'Settings',
+                onPressed: () {
+                  widget.pageController.jumpToPage(1);
+                },
+              ),
             );
             ScaffoldMessenger.of(context).showSnackBar(snackBar);
           }
@@ -86,7 +104,8 @@ class PointedCoursesList extends StatefulWidget {
   _PointedCoursesListState createState() => _PointedCoursesListState();
 }
 
-class _PointedCoursesListState extends State<PointedCoursesList> with AutomaticKeepAliveClientMixin {
+class _PointedCoursesListState extends State<PointedCoursesList>
+    with AutomaticKeepAliveClientMixin {
   late List<Course> _courses;
 
   void _handleCoursesChanged(Course course) {

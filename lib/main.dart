@@ -93,21 +93,34 @@ class _AppState extends State<App> {
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
         bottomNavigationBar: BottomNavBar(
-          changePageCallback: _changePage,
           pageController: pageController,
         ));
   }
 }
 
-class BottomNavBar extends StatelessWidget {
-  const BottomNavBar(
-      {required this.changePageCallback,
-      required this.pageController,
-      Key? key})
+class BottomNavBar extends StatefulWidget {
+  const BottomNavBar({required this.pageController, Key? key})
       : super(key: key);
 
-  final Function(int pageId) changePageCallback;
   final PageController pageController;
+
+  @override
+  _BottomNavBarState createState() => _BottomNavBarState();
+}
+
+class _BottomNavBarState extends State<BottomNavBar> {
+  void changeToPage(int pageId) async {
+    await widget.pageController.animateToPage(pageId,
+        duration: const Duration(milliseconds: 300), curve: Curves.easeInOut);
+    setState(() {});
+  }
+
+  Color? pageIconColor(int pageId) {
+    if (widget.pageController.page == null) {
+      return Colors.white;
+    }
+    return (widget.pageController.page == pageId) ? Colors.white : null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -119,27 +132,25 @@ class BottomNavBar extends StatelessWidget {
             const Spacer(),
             IconButton(
               tooltip: 'Home',
-              icon: Icon(Icons.home,
-                  color: (pageController.page == 0) ? Colors.white : null),
+              icon: Icon(Icons.home, color: pageIconColor(0)),
               onPressed: () {
-                changePageCallback(0);
+                changeToPage(0);
               },
             ),
             IconButton(
                 tooltip: 'History',
                 icon: Icon(
                   Icons.history,
-                  color: (pageController.page == 1) ? Colors.white : null,
+                  color: pageIconColor(1),
                 ),
                 onPressed: () {
-                  changePageCallback(1);
+                  changeToPage(1);
                 }),
             IconButton(
               tooltip: 'Settings',
-              icon: Icon(Icons.settings,
-                  color: (pageController.page == 2) ? Colors.white : null),
+              icon: Icon(Icons.settings, color: pageIconColor(2)),
               onPressed: () {
-                changePageCallback(2);
+                changeToPage(2);
               },
             )
           ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'courses.dart';
-
+import 'settings.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage(
@@ -91,30 +92,25 @@ class SettingsPage extends StatelessWidget {
 }
 
 class HomePage extends StatelessWidget {
-  const HomePage({
-    required this.changePageCallback,
-    required this.pageId,
-    Key? key
-  }) : super(key: key);
+  const HomePage(
+      {required this.changePageCallback, required this.pageId, Key? key})
+      : super(key: key);
 
   final Function(int pageId) changePageCallback;
   final pageId;
 
   @override
   Widget build(BuildContext context) {
-    return CoursesList(
-      courses: <Course>[
-        Course(
-            name: 'Test 1',
-            room: 'Room 11',
-            time: DateTime.now(),
-            state: CourseState.notYetPointed),
-        Course(
-            name: 'Test 2',
-            room: 'Room 22',
-            time: DateTime.now(),
-            state: CourseState.missed),
-      ],
-    );
+    return const CoursesList();
   }
 }
+
+class HistoryPage extends StatelessWidget {
+  const HistoryPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const PointedCoursesList();
+  }
+}
+

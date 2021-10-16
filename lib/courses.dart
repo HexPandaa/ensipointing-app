@@ -79,6 +79,61 @@ class _CoursesListState extends State<CoursesList> {
   }
 }
 
+class PointedCoursesList extends StatefulWidget {
+  const PointedCoursesList({Key? key}) : super(key: key);
+
+  @override
+  _PointedCoursesListState createState() => _PointedCoursesListState();
+}
+
+class _PointedCoursesListState extends State<PointedCoursesList> with AutomaticKeepAliveClientMixin {
+  late List<Course> _courses;
+
+  void _handleCoursesChanged(Course course) {
+    setState(() {
+      course.setState(CourseState.pointed);
+    });
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    _courses = [];
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    return RefreshIndicator(
+        child: ListView(
+          children: _courses.map((Course course) {
+            return CoursesListItem(
+              course: course,
+              onCoursesChanged: _handleCoursesChanged,
+            );
+          }).toList(),
+          physics: const AlwaysScrollableScrollPhysics(),
+        ),
+        onRefresh: () async {
+          try {
+            List<Course> c = await CoursesHTTPClient.getPointedCourses();
+            return setState(() {
+              _courses = c;
+            });
+          } catch (err) {
+            final snackBar = SnackBar(
+              content: Text(err.toString()),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          }
+          return Future.value(true);
+        });
+  }
+}
+
 typedef CoursesChangedCallback = Function(Course course);
 
 class CoursesListItem extends StatelessWidget {

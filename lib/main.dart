@@ -60,30 +60,54 @@ class _AppState extends State<App> {
               changePageCallback: _changePage,
               pageId: 0,
             ),
+            HistoryPage(),
             SettingsPage(
               changePageCallback: _changePage,
-              pageId: 1,
+              pageId: 2,
             )
           ],
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            var c = CoursesHTTPClient();
-            c.updateCourses();
+            String? err = CoursesHTTPClient.allSettingsSet();
+            if (err == null) {
+              // Everything should be set in the settings
+              //var c = CoursesHTTPClient();
+              //c.updateCourses();
+            } else {
+              // Something is missing from the settings
+              final snackBar = SnackBar(
+                content: Text(err + ' is missing'),
+                action: SnackBarAction(
+                  label: 'Settings',
+                  onPressed: () {
+                    pageController.jumpToPage(1);
+                  },
+                ),
+              );
+              ScaffoldMessenger.of(context).showSnackBar(snackBar);
+            }
           },
           child: const Icon(Icons.push_pin_outlined),
           tooltip: 'Point',
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        bottomNavigationBar: BottomNavBar(changePageCallback: _changePage));
+        bottomNavigationBar: BottomNavBar(
+          changePageCallback: _changePage,
+          pageController: pageController,
+        ));
   }
 }
 
 class BottomNavBar extends StatelessWidget {
-  const BottomNavBar({required this.changePageCallback, Key? key})
+  const BottomNavBar(
+      {required this.changePageCallback,
+      required this.pageController,
+      Key? key})
       : super(key: key);
 
   final Function(int pageId) changePageCallback;
+  final PageController pageController;
 
   @override
   Widget build(BuildContext context) {
@@ -95,16 +119,27 @@ class BottomNavBar extends StatelessWidget {
             const Spacer(),
             IconButton(
               tooltip: 'Home',
-              icon: const Icon(Icons.home),
+              icon: Icon(Icons.home,
+                  color: (pageController.page == 0) ? Colors.white : null),
               onPressed: () {
                 changePageCallback(0);
               },
             ),
             IconButton(
+                tooltip: 'History',
+                icon: Icon(
+                  Icons.history,
+                  color: (pageController.page == 1) ? Colors.white : null,
+                ),
+                onPressed: () {
+                  changePageCallback(1);
+                }),
+            IconButton(
               tooltip: 'Settings',
-              icon: const Icon(Icons.settings),
+              icon: Icon(Icons.settings,
+                  color: (pageController.page == 2) ? Colors.white : null),
               onPressed: () {
-                changePageCallback(1);
+                changePageCallback(2);
               },
             )
           ],

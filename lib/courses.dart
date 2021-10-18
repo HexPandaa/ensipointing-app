@@ -50,7 +50,7 @@ class CoursesList extends StatefulWidget {
   _CoursesListState createState() => _CoursesListState();
 }
 
-class _CoursesListState extends State<CoursesList> {
+class _CoursesListState extends State<CoursesList> with AutomaticKeepAliveClientMixin {
   late List<Course> _courses;
 
   void _handleCoursesChanged(Course course) {
@@ -58,6 +58,9 @@ class _CoursesListState extends State<CoursesList> {
       course.setState(CourseState.pointed);
     });
   }
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   void initState() {

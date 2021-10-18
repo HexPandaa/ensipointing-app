@@ -1,5 +1,6 @@
 import 'package:ensipointing/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 // Inspired by the Shopping List example :
 // https://flutter.dev/docs/development/ui/widgets-intro
@@ -25,6 +26,18 @@ class Course {
   Course setState(CourseState state) {
     this.state = state;
     return this;
+  }
+
+  String get formattedRooms {
+    var lines = room.split('\n')..removeWhere((element) => element.trim().isEmpty);
+    var regex = RegExp(r'[A-Z]\d{3}');
+    var formatted = lines.map((e) => regex.stringMatch(e)).join(', ');
+    return formatted;
+  }
+
+  String get formattedTime {
+    DateFormat dateFmt = DateFormat('dd/MM');
+    return dateFmt.format(timeStart) + ' ' + DateFormat.Hm().format(timeStart) + ' ➜ ' + DateFormat.Hm().format(timeEnd) ;
   }
 }
 
@@ -163,14 +176,18 @@ class CoursesListItem extends StatelessWidget {
   final Course course;
   final CoursesChangedCallback onCoursesChanged;
 
-  Color _getColor(BuildContext context) {
-    switch (course.state) {
+class _CoursesListItemState extends State<CoursesListItem> {
+
+  Color _getColor(CourseState state) {
+    switch (state) {
       case CourseState.pointed:
         return Colors.green;
       case CourseState.notYetPointed:
         return Colors.yellow;
       case CourseState.missed:
         return Colors.red;
+      default:
+        return Colors.blueGrey;
     }
   }
 
@@ -182,9 +199,9 @@ class CoursesListItem extends StatelessWidget {
         onCoursesChanged(course);
       },
       leading: const Icon(Icons.check),
-      title: Text(course.name),
-      subtitle: Text(course.room),
-      tileColor: _getColor(context),
+      title: Text(widget.course.name),
+      subtitle: Text(widget.course.formattedRooms + ' • ' + widget.course.formattedTime),
+      tileColor: _getColor(widget.course.state),
     ));
   }
 }

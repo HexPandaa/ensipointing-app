@@ -103,7 +103,18 @@ class CoursesHTTPClient {
     return courses;
   }
 
-  static Future<http.Response> _doGet(uri) async {
+  static Future<bool> pointCourse(int courseId) async {
+    var baseUrl = Settings.getValue(AppSettingKeys.platformUrl, '');
+
+    var url = baseUrl + '/pointage/groupe?idE=' + courseId.toString();
+    print(url);
+    var r = await _doGet(url);
+    print('Pointage: ${r.statusCode}');
+    print(r.body);
+    return r.statusCode == 200 && r.body.startsWith('ok');
+  }
+
+  static Future<http.Response> _doGet(String uri) async {
     var url = Uri.parse(uri);
     http.Response response = await HttpOverrides.runWithHttpOverrides(() async {
       var r = await http.get(url, headers: <String, String>{

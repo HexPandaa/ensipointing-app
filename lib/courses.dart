@@ -72,7 +72,6 @@ class _CoursesListState extends State<CoursesList> {
           children: _courses.map((Course course) {
             return CoursesListItem(
               course: course,
-              onCoursesChanged: _handleCoursesChanged,
             );
           }).toList(),
           physics: const AlwaysScrollableScrollPhysics(),
@@ -144,7 +143,6 @@ class _PointedCoursesListState extends State<PointedCoursesList>
           children: _courses.map((Course course) {
             return CoursesListItem(
               course: course,
-              onCoursesChanged: _handleCoursesChanged,
             );
           }).toList(),
           physics: const AlwaysScrollableScrollPhysics(),
@@ -168,13 +166,14 @@ class _PointedCoursesListState extends State<PointedCoursesList>
 
 typedef CoursesChangedCallback = Function(Course course);
 
-class CoursesListItem extends StatelessWidget {
-  const CoursesListItem(
-      {required this.course, required this.onCoursesChanged, Key? key})
-      : super(key: key);
+class CoursesListItem extends StatefulWidget {
+  const CoursesListItem({required this.course, Key? key}) : super(key: key);
 
   final Course course;
-  final CoursesChangedCallback onCoursesChanged;
+
+  @override
+  _CoursesListItemState createState() => _CoursesListItemState();
+}
 
 class _CoursesListItemState extends State<CoursesListItem> {
 
@@ -195,8 +194,14 @@ class _CoursesListItemState extends State<CoursesListItem> {
   Widget build(BuildContext context) {
     return Card(
         child: ListTile(
-      onTap: () {
-        onCoursesChanged(course);
+      onTap: () async {
+        if (widget.course.state == CourseState.notYetPointed) {
+          var result = await CoursesHTTPClient.pointCourse(widget.course.id);
+          if (result) {
+            widget.course.setState(CourseState.pointed);
+          }
+          setState(() {});
+        }
       },
       leading: const Icon(Icons.check),
       title: Text(widget.course.name),

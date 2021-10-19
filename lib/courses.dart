@@ -153,6 +153,10 @@ class _PointedCoursesListState extends State<PointedCoursesList>
         onRefresh: () async {
           try {
             List<Course> c = await CoursesHTTPClient.getPointedCourses();
+            // Reverse sort the courses, newer at the top
+            c.sort((Course a, Course b) {
+              return b.timeStart.compareTo(a.timeStart);
+            });
             return setState(() {
               _courses = c;
             });

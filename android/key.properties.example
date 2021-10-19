@@ -1,0 +1,4 @@
+storePassword=<yourStorePassword>
+keyPassword=<yourKeyPassword>
+keyAlias=<yourKeyName>
+storeFile=</your/key/path.jks>

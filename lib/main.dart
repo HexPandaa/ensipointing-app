@@ -53,7 +53,7 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: PageView(
-          physics: const NeverScrollableScrollPhysics(),
+          // physics: const NeverScrollableScrollPhysics(),
           controller: pageController,
           children: <Widget>[
             HomePage(
@@ -115,7 +115,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
   }
 
   Color? pageIconColor(int pageId) {
-    if (widget.pageController.page == null) {
+    if (widget.pageController.page == null &&
+        widget.pageController.initialPage == pageId) {
       return Colors.white;
     }
     return (widget.pageController.page == pageId) ? Colors.white : null;

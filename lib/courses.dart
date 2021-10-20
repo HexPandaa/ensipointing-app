@@ -29,7 +29,8 @@ class Course {
   }
 
   String get formattedRooms {
-    var lines = room.split('\n')..removeWhere((element) => element.trim().isEmpty);
+    var lines = room.split('\n')
+      ..removeWhere((element) => element.trim().isEmpty);
     var regex = RegExp(r'[A-Z]\d{3}');
     var formatted = lines.map((e) => regex.stringMatch(e)).join(', ');
     return formatted;
@@ -37,7 +38,11 @@ class Course {
 
   String get formattedTime {
     DateFormat dateFmt = DateFormat('dd/MM');
-    return dateFmt.format(timeStart) + ' ' + DateFormat.Hm().format(timeStart) + ' ➜ ' + DateFormat.Hm().format(timeEnd) ;
+    return dateFmt.format(timeStart) +
+        ' ' +
+        DateFormat.Hm().format(timeStart) +
+        ' ➜ ' +
+        DateFormat.Hm().format(timeEnd);
   }
 }
 
@@ -50,7 +55,8 @@ class CoursesList extends StatefulWidget {
   _CoursesListState createState() => _CoursesListState();
 }
 
-class _CoursesListState extends State<CoursesList> with AutomaticKeepAliveClientMixin {
+class _CoursesListState extends State<CoursesList>
+    with AutomaticKeepAliveClientMixin {
   late List<Course> _courses;
 
   void _handleCoursesChanged(Course course) {
@@ -183,7 +189,6 @@ class CoursesListItem extends StatefulWidget {
 }
 
 class _CoursesListItemState extends State<CoursesListItem> {
-
   Color _getColor(CourseState state) {
     switch (state) {
       case CourseState.pointed:
@@ -212,7 +217,8 @@ class _CoursesListItemState extends State<CoursesListItem> {
       },
       leading: const Icon(Icons.check),
       title: Text(widget.course.name),
-      subtitle: Text(widget.course.formattedRooms + ' • ' + widget.course.formattedTime),
+      subtitle: Text(
+          widget.course.formattedRooms + ' • ' + widget.course.formattedTime),
       tileColor: _getColor(widget.course.state),
     ));
   }

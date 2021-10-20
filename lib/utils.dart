@@ -143,7 +143,7 @@ class CoursesHTTPClient {
     String name = infos[5].text;
     String room = infos[7].text;
 
-    DateFormat format = DateFormat('dd/MM/yyyy hh:mm');
+    DateFormat format = DateFormat('dd/MM/yyyy HH:mm');
     DateTime dateStart = format.parse(date + ' ' + hStart);
     DateTime dateEnd = format.parse(date + ' ' + hEnd);
 
